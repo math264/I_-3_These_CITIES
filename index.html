@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<!-- Use the HTML and CSS you developed in module 01 to fill out this template.-->
+
+<head>
+  <meta charset=utf-8 />
+  <title>Lab 03</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <link rel='icon' href='https://newmapsplus.github.io/favicon.ico' type='image/x-icon' />
+
+  <!-- Add links to external css stylesheets. -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css" rel="stylesheet" />
+  <link href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,900i" rel="stylesheet" /> <!--Lato (body typeface)-->
+  <link href="https://fonts.googleapis.com/css2?family=Red+Rose&display=swap" rel="stylesheet"> <!--Red Rose (heading typeface)-->
+
+
+  <style>
+    /* Add custom styles. */
+    body {
+        margin: 0;
+        padding: 0;
+        background: #70706f;
+        font-family:'Lato', sans-serif;
+        font-weight: 300;
+        color: #ffffff;
+        font-size: 100%;
+        }
+    
+    header, section, footer {
+        width: 80%;
+        margin: 10px auto;
+        }
+
+        h1 {
+        font-family: 'Red Rose', cursive;
+        font-size: 2.2em;
+        font-weight: 900;
+        letter-spacing: .04em;
+        color: rgb(205, 0, 0);
+        }
+
+        h2 {
+        font-family: 'Red Rose', cursive;
+        font-size: 2em;
+        font-weight: 300;
+        letter-spacing: .04em;;
+        color: rgb(0, 0, 0);
+        }
+        p {
+        font-size: 1.1em;
+        line-height: 1.5em;
+        }
+
+        a {
+        color: crimson;
+        font-weight: bold;
+        text-decoration: none;
+        }
+
+        a:hover {
+        text-decoration: underline;
+        }
+
+        ul {
+        padding-left: 20px;
+        }
+
+        li {
+        margin: 10px 0;
+        }
+
+        #map {
+         width: 100%;
+         height: 60vh;
+         border-color: crimson;
+        }
+        /* coincides with <span> class attribute */
+        .highlight {
+        color: mediumblue; 
+        font-weight: bold;
+        }
+
+        .img-fill {
+        width: 100%;
+        height: auto;
+        margin: 10px 0;
+        
+        }
+
+        /* Use float property to make two-column layout */
+        .first-column {
+        float: left;
+        width: 49%;
+        padding-right: 2%;  
+        }
+
+        .second-column {
+        float: left;
+        width: 49%;
+        }
+
+        /* Clear floats after columns */
+        .row::after {
+        content: "";
+        display: block;
+        clear: both;
+        }
+
+        @media screen and (max-width: 900px) {
+        .first-column,
+        .second-column {
+        width: 100%;
+        }
+        
+        hr {
+        margin: 20px 0;
+        border: 0;
+        height: 1px;
+        background: #d3d3d3;
+        }
+
+        .caption {
+        margin: 0 0 20px 0;
+        display: block;
+        }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>I Love These Cities!</h1>
+  </header>
+  <section>
+    <div id="map"></div>
+    <h2>My Most Visited Cities</h2>
+
+    <p>This map demonstrates using JavaScript to place map markers with tooltips (or popups) with meaningful information using array data structures, for loops, and if/else statements.
+      My three cities are Pittsburgh, Lexington, and Greenville. Those cities are special to me as those are my most visited, my immediate family
+      are divided amongst those cities, and we all take turns visiting to each city. If you would like to learn more about the demographics of each city,
+      click on the markers to initiate a popup!
+    </p>
+
+    <h2>Metadata</h2>
+  <p>
+    <ul>
+      <li>Author: Michael A. Thomas @ New Maps Plus</li>
+      <li>Typefaces: Lato and Red Rose embedded from Google Fonts</li>
+      <li>Data was organized into arrays</li>
+      <li>JS from leaflet is used to create markers at each city along with a popup of additional info</li>
+    </ul>
+  </p>
+  </section>
+
+  <footer>
+    <h2>Contacts</h2>
+    <ul>
+      <li>Visit my GitHub: <a href="https://github.com/math264">math264</a></li>
+              <li>Follow me on instagram: <a href="https://www.instagram.com/eldersunnat96/">eldersunnat96</a></li>
+              <li>Follow me on LinkedIN: <a href="https://www.linkedin.com/in/michael-a-thomas-104149130/">Michael A. Thomas</a>.</li>
+      <li>Check out my maps on CARTO: <a href="https://nmp.carto.com/u/math264/dashboard/maps/">math264</a></li>
+      </ul>
+      <hr>
+<div class="caption">
+    Lexington, <a href="https://exploreukbeta.ukpdp.org/catalog/?q=Karl+Raitz+Kentucky+slides+">Karl Raitz Kentucky slides, 1980s-2000s</a>, University of Kentucky Special Collections.
+</div>
+    <a href="https://newmapsplus.github.io">
+          <img src="https://newmapsplus.github.io/assets/graphics/logo-2018-nmp-75px-h-gray.png" alt="University of Kentucky New Maps Plus">
+          </a>
+  
+      <a href="https://uky-gis.github.io">
+          <img src="https://newmapsplus.github.io/assets/graphics/logo-2018-geography-75px-h.png" alt="University of Kentucky Department of Geography">
+      </a>
+  </footer>
+
+  <!-- Add link to Leaflet JavaScript library. -->
+  <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>  
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+
+  <!-- Custom JavaScript -->
+  <script>
+    // initial map options
+    var options = {
+      center: [38.0406, -84.5037],
+      zoom: 5
+    }
+
+    // instantiate Leaflet map object
+    var map = L.map('map', options);
+
+    // Get basemap URL from Leaflet Providers
+    var basemap_url = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
+
+    // Get basemap attributes from Leaflet Providers
+    var basemap_attributes = {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+    }
+
+    // Add tileset as a layer in our map. 
+    var tiles = L.tileLayer(basemap_url, basemap_attributes);
+
+    // add tiles to map
+    map.addLayer(tiles);
+
+
+    // ARRAYS & VAR
+    // Array to hold string values of city name
+    var cities = ["Pittsburgh","Lexington","Greenville"];
+    // 2D - Array to hold City Coordinates
+    var cityCoords = [[40.4406, -79.9959],[38.0406, -84.5037],[34.8526, -82.3940]]
+    // Array to hold city population
+    var cityPop = [1704000,328690,71171]
+    // Array to hold Boolean values to test if capital
+    var cityCap = [false,false,false]
+    // build a string with HTML tags and content
+    
+
+    // create a Leaflet marker at the coordinates of each city
+    // add it to the map
+    // and bind the popup content to the marker.
+
+    for (var i = 0; i < cities.length; i++) {
+      var cityName = cities[i];
+      var cityPops = cityPop[i];
+      var nameAndPop = `${cityName} population: ${cityPops}`;
+      L.marker(cityCoords[i]).addTo(map) // Create Leaflet Marker for each city
+      .bindPopup(nameAndPop) // Adding popup to each marker
+      //  if city is a capital city
+       if (cityCap[i] == true) {
+      // concatenate a string to the existing string value
+      nameAndPop += `<br>Capital of ${states[0]}`;
+    }
+
+      console.log(nameAndPop);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // // PITTSBURGH
+    // // Create popup
+    // var popup1 = `<b>${cities[0]}</b><br><b>population</b>: ${cityPop[0]}`; 
+    // // Create Marker
+    // L.marker(cityCoords[0]).addTo(map)
+    //   .bindPopup(popup1);
+
+    //  // if city is a capital city
+    //  if (cityCap[0] == true) {
+    //   // concatenate a string to the existing string value
+    //   popup1 += `<br>Capital of ${states[0]}`;
+    // }
+
+    // // Lexington
+    // // Create popup
+    // var popup2 = `<b>${cities[1]}</b><br></br><b>population</b>: ${cityPop[1]}`;
+    // // Create Marker
+    // L.marker(cityCoords[1]).addTo(map)
+    //   .bindPopup(popup2);
+    
+    // // if city is a capital city
+    // if (cityCap[1] == true) {
+    //   // concatenate a string to the existing string value
+    //   city1Popup += `<br>Capital of ${states[0]}`;
+    // }
+
+    // // Greenville
+    // // Create popup
+    // var popup3 = `<b>${cities[2]}</b><br></br><b>population</b>: ${cityPop[2]}`;
+    // // Create Marker
+    // L.marker(cityCoords[2]).addTo(map)
+    //   .bindPopup(popup3);
+
+    //  // if city is a capital city
+    //  if (cityCap[2] == true) {
+    //   // concatenate a string to the existing string value
+    //   city1Popup += `<br>Capital of ${states[0]}`;
+    // }
+    
+  </script>
+
+</body>
